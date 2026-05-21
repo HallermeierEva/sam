@@ -1,10 +1,15 @@
 package com.sam.app
 
+import android.content.Intent
+import android.os.Build
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.sam.app.service.CommuteService
 import com.sam.ui.home.HomeScreen
 import com.sam.ui.onboarding.LanguagePickerScreen
 import com.sam.ui.onboarding.OnboardingViewModel
@@ -63,6 +68,15 @@ fun SamApp() {
             )
         }
         composable("home") {
+            val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                val serviceIntent = Intent(context, CommuteService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(serviceIntent)
+                } else {
+                    context.startService(serviceIntent)
+                }
+            }
             HomeScreen()
         }
     }

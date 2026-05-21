@@ -2,6 +2,8 @@ package com.sam.app.service
 
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
 import com.sam.app.notifications.NotificationHelper
 import com.sam.domain.context.CommuteDetector
@@ -23,6 +25,10 @@ class CommuteService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var notificationHelper: NotificationHelper
+
+    companion object {
+        private const val FOREGROUND_NOTIFICATION_ID = 101
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -52,6 +58,14 @@ class CommuteService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val notification = notificationHelper.createForegroundNotification()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(FOREGROUND_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
+        } else {
+            startForeground(FOREGROUND_NOTIFICATION_ID, notification)
+        }
+
         commuteDetector.startMonitoring()
         return START_STICKY
     }
