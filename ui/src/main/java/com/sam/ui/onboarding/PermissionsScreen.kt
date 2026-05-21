@@ -1,5 +1,9 @@
 package com.sam.ui.onboarding
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +21,13 @@ fun PermissionsScreen(
     onPermissionsGranted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        // Continue even if denied for MVP scope fallback handling
+        onPermissionsGranted()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -37,7 +48,17 @@ fun PermissionsScreen(
         )
 
         Button(
-            onClick = onPermissionsGranted
+            onClick = {
+                val permissionsToRequest = mutableListOf(
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                launcher.launch(permissionsToRequest.toTypedArray())
+            }
         ) {
             Text("Grant Permissions")
         }
