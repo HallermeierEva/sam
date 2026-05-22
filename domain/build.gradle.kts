@@ -39,3 +39,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
+dependencies {
+    implementation("javax.inject:javax.inject:1")
+}

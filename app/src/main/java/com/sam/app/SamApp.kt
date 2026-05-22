@@ -17,6 +17,8 @@ import com.sam.ui.onboarding.PermissionsScreen
 import com.sam.ui.onboarding.PersonaPickerScreen
 import com.sam.ui.onboarding.ProactivityScreen
 import com.sam.ui.onboarding.SplashScreen
+import com.sam.ui.tasks.TasksScreen
+import com.sam.ui.tasks.TasksViewModel
 
 @Composable
 fun SamApp() {
@@ -77,7 +79,16 @@ fun SamApp() {
                     context.startService(serviceIntent)
                 }
             }
-            HomeScreen()
+            HomeScreen(
+                onNavigateToTasks = { navController.navigate("tasks") },
+                onStartManualSession = {
+                    // TODO: start session route when session UI exists
+                }
+            )
+        }
+        composable("tasks") {
+            val viewModel: TasksViewModel = hiltViewModel()
+            TasksScreen(viewModel = viewModel)
         }
     }
 }
